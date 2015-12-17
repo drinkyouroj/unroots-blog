@@ -288,6 +288,7 @@ def load_user(user_id):
 class Post(db.Model):
     __tablename__ = 'posts'
     id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Text)
     body = db.Column(db.Text)
     body_html = db.Column(db.Text)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
@@ -303,7 +304,8 @@ class Post(db.Model):
         user_count = User.query.count()
         for i in range(count):
             u = User.query.offset(randint(0, user_count - 1)).first()
-            p = Post(body=forgery_py.lorem_ipsum.sentences(randint(1, 5)),
+            p = Post(title=forgery_py.lorem_ipsum.title(),
+                     body=forgery_py.lorem_ipsum.sentences(randint(5, 50)),
                      timestamp=forgery_py.date.date(True),
                      author=u)
             db.session.add(p)
@@ -352,6 +354,24 @@ class Comment(db.Model):
     disabled = db.Column(db.Boolean)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+
+    @staticmethod
+    def generate_fake(count=150):
+        from random import seed, randint
+        import forgery_py
+
+        seed()
+        user_count = User.query.count()
+        post_count = Post.query.count()
+        for i in range(count):
+            u = User.query.offset(randint(0, user_count - 1)).first()
+            p = Post.query.offset(randint(0, post_count - 1)).first()
+            c = Comment(body=forgery_py.lorem_ipsum.sentences(randint(1, 4)),
+                        timestamp=forgery_py.date.date(True),
+                        author_id=u,
+                        post_id=p)
+            db.session.add(c)
+            db.session.commit()
 
     @staticmethod
     def on_changed_body(target, value, oldvalue, initiator):
