@@ -1,12 +1,12 @@
 {% for post in posts %}
-<article class="posts">
+<article class="post">
     <header>
         <div class="title">
             <h2><a href="{{ url_for('.post', id=post.id) }}">{{ post.title }}</a></h2>
         </div>
         <div class="meta">
             <time class="published" datetime="{{ post.timestamp }}">{{ moment(post.timestamp).fromNow() }}</time>
-            <a href="{{ url_for('.user', username=post.author.username) }}" class="author"><span class="name">{{ post.author.username }}</span><img src="{{ post.author.gravatar(size=40) }}" alt="{{ post.author.username }}'s avatar" /></a>
+            <a href="{{ url_for('.user', username=post.author.username) }}" class="author"><img src="{{ post.author.gravatar(size=40) }}" style="margin-right:8px" alt="{{ post.author.username }}'s avatar" /><span class="name">{{ post.author.username }}</span></a>
         </div>
     </header>
 
@@ -25,8 +25,7 @@
             {% if current_user == post.author %}
             <li><a href="{{ url_for('.edit', id=post.id) }}" class="button big">Edit</a></li>
             {% elif current_user.is_administrator() %}
-            <li><a href="{{ url_for('.edit', id=post.id) }}" class="button big">
-                <span class="label label-danger">Edit [Admin]</span>
+            <li><a href="{{ url_for('.edit', id=post.id) }}" class="button big">Edit [Admin]</span>
             </a></li>
             {% endif %}
         </ul>
